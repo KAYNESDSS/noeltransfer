@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Noel Transfer - Envío de Dinero BRL a BOB</title>
+<style>
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+  body {
+    background: #000;
+    color: #ccc;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  header {
+    background: #0a0a0a;
+    padding: 20px 10px;
+    text-align: center;
+    border-bottom: 2px solid #ffd600;
+    box-shadow: 0 0 12px #ffd600aa;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 {
+    color: #ffd600;
+    font-weight: 900;
+    font-size: 3rem;
+    text-shadow: 0 0 8px #ffd600cc;
+  }
+  header p {
+    color: #888;
+    font-size: 1.1rem;
+    margin-top: 6px;
+  }
+  main {
+    max-width: 980px;
+    margin: 20px auto 60px auto;
+    padding: 0 20px;
+    flex: 1;
+  }
+  .flags-container {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    margin-bottom: 40px;
+    user-select: none;
+    align-items: center;
+  }
+  .flag-img {
+    width: 140px;
+    height: 90px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow:
+      0 0 6px rgba(0,0,0,0.9),
+      0 0 4px rgba(255,214,0,0.8);
+    background-color: black;
+  }
+  .flag-bolivia {
+    position: relative;
+    width: 140px;
+    height: 90px;
+    border-radius: 12px;
+    box-shadow:
+      0 0 6px rgba(0,0,0,0.9),
+      0 0 4px rgba(255,214,0,0.8);
+    overflow: hidden;
+  }
+  .flag-bolivia .stripe {
+    width: 100%;
+    height: 33.3333%;
+  }
+  .flag-bolivia .red {
+    background-color: #d52b1e;
+  }
+  .flag-bolivia .yellow {
+    background-color: #ffd100;
+  }
+  .flag-bolivia .green {
+    background-color: #007934;
+  }
+  .flag-bolivia .coat {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 48px;
+    height: 48px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/6/6a/Coat_of_arms_of_Bolivia.svg') no-repeat center center;
+    background-size: contain;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .about-us {
+    margin: 20px auto 0 auto;
+    max-width: 840px;
+    display: flex;
+    background: #121212;
+    border-radius: 16px;
+    box-shadow: 0 0 28px #ffd600aa;
+    padding: 26px 26px;
+    gap: 26px;
+    align-items: center;
+    color: #ddd;
+  }
+  .about-photo {
+    flex-shrink: 0;
+    width: 220px;
+    height: auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 15px #ffd600aa;
+  }
+  .about-photo img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+  .about-text {
+    flex: 1;
+  }
+  .about-text h2 {
+    color: #ffd600;
+    font-weight: 900;
+    font-size: 1.85rem;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 0;
+  }
+  .about-text p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-top: 22px;
+    margin-bottom: 16px;
+    color: #ccc;
+    font-weight: 400;
+  }
+  .about-text ul {
+    padding-left: 20px;
+    margin-bottom: 0;
+    color: #ccc;
+  }
+  .about-text ul li {
+    margin-bottom: 9px;
+    font-size: 1.05rem;
+    font-weight: 400;
+  }
+  form {
+    background: #121212;
+    padding: 32px 32px 36px 32px;
+    border-radius: 16px;
+    box-shadow: 0 0 30px #ffd600aa;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap: 24px 32px;
+    color: #ddd;
+    margin-top: 40px;
+  }
+  form label {
+    grid-column: span 2;
+    font-weight: 700;
+    color: #ffd600;
+    font-size: 1.05rem;
+  }
+  form input, form select, form textarea {
+    grid-column: span 2;
+    background: #000;
+    border: 2px solid #444;
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #eee;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+  }
+  form input:focus, form select:focus, form textarea:focus {
+    outline: none;
+    border-color: #ffd600;
+    box-shadow: 0 0 10px #ffd600cc;
+  }
+  form input.half, form select.half {
+    grid-column: span 1;
+  }
+  form label.half {
+    grid-column: span 1;
+  }
+  .payment-methods {
+    grid-column: span 2;
+    display: flex;
+    gap: 36px;
+    align-items: center;
+    color: #eee;
+  }
+  .payment-methods label {
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .payment-methods input[type=radio] {
+    margin-right: 8px;
+  }
+  .terms-container {
+    grid-column: span 2;
+    display: flex;
+    align-items: center;
+    color: #eee;
+  }
+  .terms-container input[type=checkbox] {
+    margin-right: 10px;
+  }
+  button[type=submit] {
+    grid-column: span 2;
+    background: #ffd600;
+    border: none;
+    border-radius: 16px;
+    color: #000;
+    font-weight: 900;
+    font-size: 1.25rem;
+    padding: 16px 0;
+    cursor: pointer;
+    box-shadow: 0 0 25px #ffd600bb;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  button[type=submit]:hover {
+    background-color: #e6c500;
+    box-shadow: 0 0 35px #ffd600ee;
+  }
+  .testimonials {
+    margin-top: 60px;
+    background: #121212;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 0 40px #0f8e3faa;
+  }
+  .testimonials h2 {
+    text-align: center;
+    color: #0f8e3f;
+    font-weight: 900;
+    font-size: 2.4rem;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px #0f8e3fbb;
+  }
+  .testimonial-slider {
+    position: relative;
+    overflow: hidden;
+  }
+  .testimonial-items {
+    display: flex;
+    transition: transform 0.5s ease;
+  }
+  .testimonial-item {
+    flex: 0 0 100%;
+    padding: 20px 24px;
+    font-style: italic;
+    color: #ccc;
+    user-select: none;
+    box-sizing: border-box;
+  }
+  .testimonial-item p {
+    font-size: 1.2rem;
+    margin-bottom: 14px;
+  }
+  .testimonial-author {
+    font-weight: 700;
+    color: #adebad;
+    text-align: right;
+  }
+  .testimonial-controls {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .testimonial-controls button {
+    background: transparent;
+    border: 2px solid #0f8e3f;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    margin: 0 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  .testimonial-controls button.active,
+  .testimonial-controls button:hover {
+    background-color: #0f8e3f;
+    transform: scale(1.3);
+  }
+  .whatsapp-float-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #25d366;
+    padding: 10px 16px;
+    border-radius: 50px;
+    box-shadow: 0 0 20px #25d366cc;
+    cursor: pointer;
+    z-index: 99999;
+    animation: pulse 2.5s infinite;
+    transition: background-color 0.3s ease;
+    user-select: none;
+    text-decoration: none;
+  }
+  .whatsapp-float-container:hover {
+    background-color: #1ebe57;
+    animation: none;
+  }
+  .whatsapp-float-container svg {
+    width: 36px;
+    height: 36px;
+    fill: white;
+  }
+  .whatsapp-float-text {
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    user-select: none;
+    font-size: 1rem;
+    text-decoration: none;
+  }
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 0 15px #25d366cc, 0 0 40px #25d36677;
+    }
+    50% {
+      box-shadow: 0 0 25px #25d366ee, 0 0 60px #25d366aa;
+    }
+  }
+  @media (max-width: 720px) {
+    form {
+      grid-template-columns: 1fr !important;
+    }
+    form label, form input, form select, form textarea, button[type=submit] {
+      grid-column: span 1 !important;
+    }
+    .flags-container {
+      gap: 30px;
+    }
+    .about-us {
+      flex-direction: column;
+      padding: 20px;
+      max-width: 100% !important;
+    }
+    .about-photo {
+      width: 140px !important;
+      height: auto !important;
+      margin-bottom: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Noel Transfer</h1>
+  <p>Envío de dinero rápido, seguro y con el mejor tipo de cambio Brasil - Bolivia</p>
+</header>
+
+<main>
+
+  <div class="flags-container" aria-label="Banderas de Brasil y Bolivia">
+    <img class="flag-img" src="https://upload.wikimedia.org/wikipedia/en/0/05/Flag_of_Brazil.svg" alt="Bandera de Brasil" />
+    <div class="flag-bolivia" aria-label="Bandera de Bolivia con escudo">
+      <div class="stripe red"></div>
+      <div class="stripe yellow"></div>
+      <div class="stripe green"></div>
+      <div class="coat" title="Escudo de Bolivia"></div>
+    </div>
+  </div>
+
+  <section class="about-us" aria-label="Sección Envía tu dinero conmigo">
+    <div class="about-photo">
+      <img
+        alt="Foto de Noel Transfer"
+        src="file:///C:/Users/KAYNESDS/Documents/NOEL%20TRANSFER/noel.jpg.jpg"
+      />
+    </div>
+    <div class="about-text">
+      <h2>ENVÍA TU DINERO CONMIGO</h2>
+      <p>Transferencias rápidas, seguras y confiables con el mejor tipo de cambio Brasil-Bolivia.</p>
+      <ul>
+        <li>Atención personalizada 24/7</li>
+        <li>Sin cargos ocultos</li>
+        <li>Seguimiento en tiempo real</li>
+      </ul>
+    </div>
+  </section>
+
+  <form id="sendForm" autocomplete="off" aria-label="Formulario de envío de dinero">
+    <label for="amountBRL">Monto en Reales (BRL)*</label>
+    <input type="number" id="amountBRL" name="amountBRL" min="1" step="0.01" required placeholder="Ej: 1500.00" aria-required="true" />
+
+    <label for="senderName">Nombre del remitente*</label>
+    <input type="text" id="senderName" name="senderName" required placeholder="Tu nombre completo" aria-required="true" />
+
+    <label for="senderPhone">Teléfono del remitente*</label>
+    <input type="tel" id="senderPhone" name="senderPhone" required placeholder="+591 71234567" aria-required="true" pattern="[\+][0-9\s\-]{7,15}" />
+
+    <label for="recipientName">Nombre del destinatario*</label>
+    <input type="text" id="recipientName" name="recipientName" required placeholder="Nombre completo" aria-required="true" />
+
+    <label for="recipientDept">Departamento del destinatario*</label>
+    <input type="text" id="recipientDept" name="recipientDept" required placeholder="Ej: Santa Cruz" aria-required="true" />
+
+    <label for="userMessage">Mensaje / Consulta sobre el cambio o dudas</label>
+    <textarea id="userMessage" name="userMessage" placeholder="Escribe tu consulta aquí..." rows="4"></textarea>
+
+    <label>Método de pago*</label>
+    <div class="payment-methods" role="radiogroup" aria-required="true" aria-label="Medio de pago">
+      <label><input type="radio" name="paymentMethod" value="Dinero" required> Dinero en efectivo</label>
+      <label><input type="radio" name="paymentMethod" value="PIX" required> PIX</label>
+    </div>
+
+    <div class="terms-container">
+      <input type="checkbox" id="terms" name="terms" />
+      <label for="terms">Acepto los términos y condiciones</label>
+    </div>
+
+    <button type="submit" aria-label="Enviar solicitud de envío de dinero">Enviar Solicitud</button>
+  </form>
+
+  <section class="testimonials" aria-label="Lo que dicen nuestros clientes">
+    <h2>Lo que dicen nuestros clientes</h2>
+    <div class="testimonial-slider" aria-live="polite">
+      <div class="testimonial-items">
+        <article class="testimonial-item" aria-label="Testimonio de cliente">
+          <p>"Atención personalizada y cambio justo. 100% confiable. Recomiendo sin duda."</p>
+          <p class="testimonial-author">- María S.</p>
+        </article>
+        <article class="testimonial-item" aria-label="Testimonio de cliente">
+          <p>"Envío rápido y seguro. El mejor tipo de cambio que encontré en Brasil."</p>
+          <p class="testimonial-author">- José L.</p>
+        </article>
+        <article class="testimonial-item" aria-label="Testimonio de cliente">
+          <p>"Siempre me han ayudado con mis envíos a Bolivia. Servicio profesional y atento."</p>
+          <p class="testimonial-author">- Ana P.</p>
+        </article>
+      </div>
+      <div class="testimonial-controls" role="tablist">
+        <button aria-label="Mostrar testimonio 1" class="active"></button>
+        <button aria-label="Mostrar testimonio 2"></button>
+        <button aria-label="Mostrar testimonio 3"></button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<a href="https://wa.me/5511986928070?text=Hola%20Noel%20Transfer,%20quiero%20enviar%20dinero" target="_blank" rel="noopener noreferrer" class="whatsapp-float-container" aria-label="Contactar por WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M20.52 3.48A11.9 11.9 0 0012 0C5.372 0 0 5.372 0 12a11.93 11.93 0 001.635 6.188L0 24l5.76-1.635A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12 0-3.205-1.254-6.214-3.48-8.52zm-8.52 18c-1.95 0-3.75-.516-5.29-1.4l-.38-.223-3.42.974.975-3.42-.223-.38a9.904 9.904 0 01-1.4-5.29c0-5.514 4.486-10 10-10 2.673 0 5.177 1.04 7.07 2.93A9.952 9.952 0 0120.52 12c0 5.514-4.486 10-10 10zm5.42-7.59c-.296-.148-1.75-.86-2.02-.958-.27-.1-.466-.147-.662.15-.196.296-.758.958-.93 1.155-.173.197-.347.22-.644.074-.296-.147-1.25-.46-2.38-1.475-.88-.78-1.47-1.744-1.642-2.04-.173-.296-.02-.455.128-.602.13-.13.296-.347.445-.52.15-.173.2-.296.296-.493.1-.197.05-.37-.025-.52-.074-.147-.662-1.6-.905-2.19-.237-.57-.478-.493-.662-.503l-.57-.01c-.196 0-.52.074-.792.37s-1.04 1.02-1.04 2.48 1.064 2.88 1.213 3.08c.15.2 2.096 3.2 5.08 4.487.71.306 1.263.488 1.694.624.71.226 1.36.194 1.87.118.57-.085 1.75-.715 2-.14.25.575.25 1.067.175 1.175-.074.11-.27.173-.57.298z"/>
+  </svg>
+  <span class="whatsapp-float-text">Entra en contacto con nosotros</span>
+</a>
+
+<script>
+  const form = document.getElementById('sendForm');
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    const amountBRL = formData.get('amountBRL').trim();
+    const senderName = formData.get('senderName').trim();
+    const senderPhone = formData.get('senderPhone').trim();
+    const recipientName = formData.get('recipientName').trim();
+    const recipientDept = formData.get('recipientDept').trim();
+    const userMessage = formData.get('userMessage').trim();
+    const paymentMethod = formData.get('paymentMethod');
+    const termsAccepted = formData.get('terms');
+
+    if (!amountBRL || amountBRL <= 0) {
+      alert('Por favor, ingresa un monto válido en reales.');
+      return;
+    }
+    if (!senderName) {
+      alert('Por favor, ingresa el nombre del remitente.');
+      return;
+    }
+    if (!senderPhone) {
+      alert('Por favor, ingresa el teléfono del remitente.');
+      return;
+    }
+    if (!recipientName) {
+      alert('Por favor, ingresa el nombre del destinatario.');
+      return;
+    }
+    if (!recipientDept) {
+      alert('Por favor, ingresa el departamento del destinatario.');
+      return;
+    }
+    if (!paymentMethod) {
+      alert('Por favor, selecciona un método de pago.');
+      return;
+    }
+    if (!termsAccepted) {
+      alert('Por favor, acepta los términos y condiciones.');
+      return;
+    }
+
+    let message = `Hola Noel Transfer, quiero enviar *${amountBRL} BRL*.\n` +
+                  `Remitente:\n` +
+                  `- Nombre: ${senderName}\n` +
+                  `- Teléfono: ${senderPhone}\n` +
+                  `Destinatario:\n` +
+                  `- Nombre: ${recipientName}\n` +
+                  `- Departamento: ${recipientDept}\n` +
+                  `Método de pago: ${paymentMethod}\n`;
+
+    if(userMessage) {
+      message += `Consulta: ${userMessage}`;
+    } else {
+      message += `Consulta: (sin mensaje)`;
+    }
+
+    const encodedMsg = encodeURIComponent(message);
+    const whatsappURL = `https://wa.me/5511986928070?text=${encodedMsg}`;
+    window.open(whatsappURL, '_blank');
+  });
+
+  const testimonials = document.querySelector('.testimonial-items');
+  const buttons = document.querySelectorAll('.testimonial-controls button');
+  let currentIndex = 0;
+
+  function showTestimonial(index) {
+    testimonials.style.transform = `translateX(-${index * 100}%)`;
+    buttons.forEach(btn => btn.classList.remove('active'));
+    buttons[index].classList.add('active');
+    currentIndex = index;
+  }
+
+  buttons.forEach((btn, idx) => {
+    btn.addEventListener('click', () => showTestimonial(idx));
+  });
+
+  setInterval(() => {
+    let nextIndex = (currentIndex + 1) % buttons.length;
+    showTestimonial(nextIndex);
+  }, 8000);
+</script>
+
+</body>
+</html>
